@@ -11,16 +11,20 @@ import Foundation
 
 struct API {
     
-
-    
-    static func getRestaurants(completion: @escaping ([[String:Any]]?) -> Void) {
+    static func getRestaurants(completion: @escaping ([Restaurant]?) -> Void) {
         
         // ––––– TODO: Add your own API key!
         let apikey = "D3B44wKmfhIQEnO1vuP-XUUE-LCW4zbNzRQzeVbDbNObZP5vUpcam2f4fVFF_VbwtUPVlpz0cYAvD5FSnl8aZrZ_IMxPbX7KpL8uwFm6BPK-QZtB-GiR4OjX_IZLYHYx"
         
+        
         // Coordinates for San Francisco
         let lat = 37.773972
         let long = -122.431297
+        
+        
+        // Coordinates for Union Square, New York, NY
+        //let lat = 40.7359
+        //let long = 73.9911
         
         
         let url = URL(string: "https://api.yelp.com/v3/transactions/delivery/search?latitude=\(lat)&longitude=\(long)")!
@@ -40,19 +44,22 @@ struct API {
         
 
                 // ––––– TODO: Get data from API and return it using completion
-                print(data)
-                
-                //convert json response to a dictionary
-                let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String:Any]
-                
-                //grab business data and convert to array of dictionaries for each restaurant
-                let restaurants = dataDictionary["businesses"] as! [[String: Any]]
-                
-                //completion is an escaption method which allows data to be used outside of closure
+                let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
+
+                // Get array of restaurant dictionaries
+                let restDictionaries = dataDictionary["businesses"] as! [[String: Any]]
+
+                // Variable to store array of Restaurants
+                var restaurants: [Restaurant] = []
+
+                // Use each restaurant dictionary to initialize Restaurant object
+                for dictionary in restDictionaries {
+                    let restaurant = Restaurant.init(dict: dictionary)
+                    restaurants.append(restaurant) // add to restaurants array
+                }
+
                 return completion(restaurants)
-                
-                
-                //return completion([[:]])
+
                 
                 }
             }
